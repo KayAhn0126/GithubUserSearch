@@ -24,6 +24,10 @@ class SearchViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         createSearchController()
+        configureDataSource()
+    }
+    
+    private func configureDataSource() {
         datasource = UICollectionViewDiffableDataSource(collectionView: collectionView, cellProvider: { collectionView, indexPath, item in
             guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "ResultCell", for: indexPath) as? ResultCell else {
                 return nil
@@ -31,10 +35,10 @@ class SearchViewController: UIViewController {
             cell.user.text = item.login
             return cell
         })
-        collectionView.collectionViewLayout = layout()
+        collectionView.collectionViewLayout = configureLayout()
     }
     
-    private func layout() -> UICollectionViewCompositionalLayout {
+    private func configureLayout() -> UICollectionViewCompositionalLayout {
         let itemSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1), heightDimension: .absolute(60))
         let item = NSCollectionLayoutItem(layoutSize: itemSize)
         
