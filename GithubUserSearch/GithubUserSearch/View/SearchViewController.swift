@@ -31,6 +31,18 @@ class SearchViewController: UIViewController {
             cell.user.text = item.login
             return cell
         })
+        collectionView.collectionViewLayout = layout()
+    }
+    
+    private func layout() -> UICollectionViewCompositionalLayout {
+        let itemSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1), heightDimension: .absolute(60))
+        let item = NSCollectionLayoutItem(layoutSize: itemSize)
+        
+        let groupSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1), heightDimension: .absolute(60))
+        let group = NSCollectionLayoutGroup.vertical(layoutSize: groupSize, subitems: [item])
+        
+        let section = NSCollectionLayoutSection(group: group)
+        return UICollectionViewCompositionalLayout(section: section)
     }
     
     private func createSearchController() {
