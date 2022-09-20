@@ -8,12 +8,29 @@ import UIKit
 import Combine
 
 class SearchViewController: UIViewController {
+    // 해야 할일 크게 2가지.
+    // 컬렉션뷰 DiffableDataSource, NSsnapshot, compositional layout
+    // 네트워크를 통해 데이터를 받았을때 파이프라인 생성 -> bind()
+    
+    enum Section {
+        case main
+    }
+    
+    typealias Item = SearchResult
+    var datasource: UICollectionViewDiffableDataSource<Section, Item>!
     
     @IBOutlet weak var collectionView: UICollectionView!
     
     override func viewDidLoad() {
         super.viewDidLoad()
         createSearchController()
+        datasource = UICollectionViewDiffableDataSource(collectionView: collectionView, cellProvider: { collectionView, indexPath, item in
+            guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "ResultCell", for: indexPath) as? ResultCell else {
+                return nil
+            }
+            cell.user.text = item.login
+            return cell
+        })
     }
     
     private func createSearchController() {
