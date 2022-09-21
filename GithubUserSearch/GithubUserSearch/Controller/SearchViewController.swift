@@ -69,7 +69,7 @@ class SearchViewController: UIViewController {
         self.navigationItem.title = "Search"
         let searchController = UISearchController(searchResultsController: nil)
         searchController.hidesNavigationBarDuringPresentation = true
-        searchController.searchBar.placeholder = "Search Github User..."
+        searchController.searchBar.placeholder = "유저네임을 입력해주세요.."
         searchController.searchResultsUpdater = self
         searchController.searchBar.delegate = self
         searchController.delegate = self
@@ -80,13 +80,11 @@ class SearchViewController: UIViewController {
 extension SearchViewController: UISearchResultsUpdating {
     func updateSearchResults(for searchController: UISearchController) {
         let text = searchController.searchBar.text
-        print("\(text)")
     }
 }
 
 extension SearchViewController: UISearchBarDelegate {
     func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
-        print("completed with : \(searchBar.text)")
         searchBar.resignFirstResponder()
         
         guard let keyword = searchBar.text else { return }
@@ -105,6 +103,7 @@ extension SearchViewController: UISearchBarDelegate {
         header.forEach { (key: String, value: String) in
             request.addValue(value, forHTTPHeaderField: key)
         }
+
         URLSession.shared.dataTaskPublisher(for: request)
             .map { $0.data }
             .decode(type: SearchUserResponse.self, decoder: JSONDecoder())
@@ -113,6 +112,13 @@ extension SearchViewController: UISearchBarDelegate {
             .receive(on: RunLoop.main)
             .assign(to: \.searchUserResult, on: self)
             .store(in: &subscriptions)
+    }
+    
+    func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
+        var snapshot = NSDiffableDataSourceSnapshot<Section,Item>()
+        snapshot.appendSections([.main])
+        snapshot.appendItems([], toSection: .main)
+        datasource.apply(snapshot)
     }
 }
 
@@ -124,13 +130,36 @@ extension SearchViewController: UISearchControllerDelegate {
 
 extension SearchViewController: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        let currentUser = searchUserResult[indexPath.item]
         
+        let selectedUserName = searchUserResult[indexPath.item].login
+        
+        let resource = Resource<DetailSearchResult>(
+            base: "https://api.github.com/",
+            path: "users/\(selectedUserName)",
+            params: [:],
+            header: ["Content-Type": "application/json"]
+        )
         let detailStoryboard = UIStoryboard(name: "Detail", bundle: nil)
         let currentVC = detailStoryboard.instantiateViewController(withIdentifier: "DetailViewController") as! DetailViewController
-        currentVC.userInfo = currentUser
+        
+        let detailNetwork = NetworkService(configuration: .default)
+        detailNetwork.load(resource)
+            .receive(on: RunLoop.main)
+            .sink { completion in
+                switch completion {
+                case .failure(let error):
+                    print("Error Code : \(error)")
+                case .finished:
+                    print("Completed with: \(completion)")
+                    break
+                }
+            } receiveValue: { result in
+                currentVC.userInfo = result
+            }
+            .store(in: &subscriptions)
+        
         navigationController?.navigationBar.prefersLargeTitles = false
-        currentVC.navigationItem.title = currentUser.login
+        currentVC.navigationItem.title = selectedUserName
         navigationController?.pushViewController(currentVC, animated: true)
     }
 }
