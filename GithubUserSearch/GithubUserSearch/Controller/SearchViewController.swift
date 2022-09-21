@@ -32,6 +32,11 @@ class SearchViewController: UIViewController {
         collectionView.delegate = self
     }
     
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        navigationController?.navigationBar.prefersLargeTitles = true
+    }
+    
     private func bind() {
         $searchUserResult
             .receive(on: RunLoop.main)

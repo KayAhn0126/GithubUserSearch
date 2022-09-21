@@ -29,11 +29,6 @@ class DetailViewController: UIViewController {
         bind()
     }
     
-    override func viewWillDisappear(_ animated: Bool) {
-        super.viewWillDisappear(animated)
-        navigationController?.navigationBar.prefersLargeTitles = true
-    }
-    
     private func bind() {
         $userInfo
             .receive(on: RunLoop.main)
