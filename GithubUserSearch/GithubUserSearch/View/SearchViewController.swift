@@ -18,13 +18,25 @@ class SearchViewController: UIViewController {
     
     typealias Item = SearchResult
     var datasource: UICollectionViewDiffableDataSource<Section, Item>!
-    
+    @Published private(set) var searchUserResult: [SearchResult] = []
     @IBOutlet weak var collectionView: UICollectionView!
     
     override func viewDidLoad() {
         super.viewDidLoad()
         createSearchController()
         configureDataSource()
+        bind()
+    }
+    
+    private func bind() {
+        $searchUserResult
+            .receive(on: RunLoop.main)
+            .sink { [unowned self] result in
+                var snapshot = NSDiffableDataSourceSnapshot<Section,Item>()
+                snapshot.appendSections([.main])
+                snapshot.appendItems(result, toSection: .main)
+                self.datasource.apply(snapshot)
+        }
     }
     
     private func configureDataSource() {
@@ -72,6 +84,8 @@ extension SearchViewController: UISearchBarDelegate {
     func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
         print("completed with : \(searchBar.text)")
         searchBar.resignFirstResponder()
+        
+        
     }
 }
 
