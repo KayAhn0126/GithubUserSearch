@@ -29,6 +29,7 @@ class SearchViewController: UIViewController {
         createSearchController()
         configureDataSource()
         bind()
+        collectionView.delegate = self
     }
     
     private func bind() {
@@ -118,5 +119,11 @@ extension SearchViewController: UISearchBarDelegate {
 extension SearchViewController: UISearchControllerDelegate {
     func didPresentSearchController(_ searchController: UISearchController) {
         searchController.searchBar.becomeFirstResponder()
+    }
+}
+
+extension SearchViewController: UICollectionViewDelegate {
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        print("\(indexPath)")
     }
 }
