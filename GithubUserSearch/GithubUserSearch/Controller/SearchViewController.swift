@@ -124,6 +124,13 @@ extension SearchViewController: UISearchControllerDelegate {
 
 extension SearchViewController: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        print("\(indexPath)")
+        let currentUser = searchUserResult[indexPath.item]
+        
+        let detailStoryboard = UIStoryboard(name: "Detail", bundle: nil)
+        let currentVC = detailStoryboard.instantiateViewController(withIdentifier: "DetailViewController") as! DetailViewController
+        currentVC.userInfo = currentUser
+        navigationController?.navigationBar.prefersLargeTitles = false
+        currentVC.navigationItem.title = currentUser.login
+        navigationController?.pushViewController(currentVC, animated: true)
     }
 }
