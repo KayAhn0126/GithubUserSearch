@@ -18,7 +18,10 @@ class SearchViewController: UIViewController {
     
     typealias Item = SearchResult
     var datasource: UICollectionViewDiffableDataSource<Section, Item>!
+    
     @Published private(set) var searchUserResult: [SearchResult] = []
+    var subscriptions = Set<AnyCancellable>()
+    
     @IBOutlet weak var collectionView: UICollectionView!
     
     override func viewDidLoad() {
@@ -36,7 +39,7 @@ class SearchViewController: UIViewController {
                 snapshot.appendSections([.main])
                 snapshot.appendItems(result, toSection: .main)
                 self.datasource.apply(snapshot)
-        }
+            }.store(in: &subscriptions)
     }
     
     private func configureDataSource() {
