@@ -51,7 +51,7 @@ class DetailViewController: UIViewController {
         self.firstDateLabel.text = "first date : \(user.firstDate)"
         self.latestUpdateLabel.text = "latest update : \(user.latestupdateDate)"
         self.companyLabel.text = "company : \(user.company ?? "still studying!")"
-        self.locationLabel.text = "location : \(user.location ?? "somewhere in Earth")"
+        self.locationLabel.text = "location : \(user.location ?? "somewhere on Earth")"
         self.thumbnail.kf.setImage(with: user.avatarUrl)
     }
 }
