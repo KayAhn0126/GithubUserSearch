@@ -77,7 +77,6 @@ class SearchViewController: UIViewController {
         searchController.searchBar.placeholder = "유저네임을 입력해주세요.."
         searchController.searchResultsUpdater = self
         searchController.searchBar.delegate = self
-        searchController.delegate = self
         self.navigationItem.searchController = searchController
     }
 }
@@ -90,7 +89,6 @@ extension SearchViewController: UISearchResultsUpdating {
 
 extension SearchViewController: UISearchBarDelegate {
     func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
-        searchBar.resignFirstResponder()
         
         guard let keyword = searchBar.text else { return }
         let base = "https://api.github.com/"
@@ -124,12 +122,6 @@ extension SearchViewController: UISearchBarDelegate {
         snapshot.appendSections([.main])
         snapshot.appendItems([], toSection: .main)
         datasource.apply(snapshot)
-    }
-}
-
-extension SearchViewController: UISearchControllerDelegate {
-    func didPresentSearchController(_ searchController: UISearchController) {
-        searchController.searchBar.becomeFirstResponder()
     }
 }
 
